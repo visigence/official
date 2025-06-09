@@ -73,12 +73,12 @@ const EditableObject = memo<{
   const meshRef = useRef<any>();
   const [hovered, setHovered] = useState(false);
 
-  // Enhanced visual feedback for selection
+  // Enhanced visual feedback for selection - optimized for mobile
   useFrame(() => {
     if (meshRef.current && isSelected) {
-      // Subtle pulsing effect for selected objects
-      const time = Date.now() * 0.002;
-      meshRef.current.material.emissiveIntensity = 0.1 + Math.sin(time) * 0.05;
+      // Reduced pulsing effect for better performance
+      const time = Date.now() * 0.001;
+      meshRef.current.material.emissiveIntensity = 0.05 + Math.sin(time) * 0.02;
     }
   });
 
@@ -88,11 +88,11 @@ const EditableObject = memo<{
       case 'box':
         return <boxGeometry args={[1, 1, 1]} />;
       case 'sphere':
-        return <sphereGeometry args={[0.5, 32, 32]} />;
+        return <sphereGeometry args={[0.5, 16, 16]} />; // Reduced segments for mobile
       case 'cylinder':
-        return <cylinderGeometry args={[0.5, 0.5, 1, 32]} />;
+        return <cylinderGeometry args={[0.5, 0.5, 1, 16]} />; // Reduced segments
       case 'cone':
-        return <coneGeometry args={[0.5, 1, 32]} />;
+        return <coneGeometry args={[0.5, 1, 16]} />; // Reduced segments
       default:
         return <boxGeometry args={[1, 1, 1]} />;
     }
@@ -132,22 +132,22 @@ const EditableObject = memo<{
           metalness={object.metalness}
           roughness={object.roughness}
           emissive={isSelected ? '#4dafff' : object.emissive}
-          emissiveIntensity={isSelected ? 0.1 : object.emissiveIntensity}
+          emissiveIntensity={isSelected ? 0.05 : object.emissiveIntensity}
         />
       </mesh>
       
-      {/* Enhanced selection outline */}
+      {/* Simplified selection outline for mobile performance */}
       {(isSelected || hovered) && (
         <mesh
           position={object.position}
           rotation={object.rotation}
-          scale={object.scale.map(s => s * 1.02) as [number, number, number]}
+          scale={object.scale.map(s => s * 1.01) as [number, number, number]}
         >
           {renderGeometry()}
           <meshBasicMaterial 
             color={isSelected ? '#4dafff' : '#ffffff'} 
             transparent 
-            opacity={isSelected ? 0.3 : 0.1}
+            opacity={isSelected ? 0.2 : 0.05}
             wireframe={true}
           />
         </mesh>
@@ -158,7 +158,7 @@ const EditableObject = memo<{
         <TransformControls
           object={meshRef.current}
           mode={transformMode}
-          size={0.8}
+          size={0.6} // Smaller for mobile
           showX={true}
           showY={true}
           showZ={true}
@@ -191,7 +191,7 @@ const EditableObject = memo<{
   );
 });
 
-// Enhanced Scene Component with lighting helpers
+// Enhanced Scene Component with optimized lighting for mobile
 const EditorScene = memo<{
   objects: SceneObject[];
   selectedObjectId: string | null;
@@ -204,57 +204,57 @@ const EditorScene = memo<{
   const directionalLightRef = useRef<any>();
   const pointLightRef = useRef<any>();
 
-  // Light helpers for debugging
+  // Light helpers for debugging - only when enabled
   useHelper(showLightHelpers && directionalLightRef.current ? directionalLightRef : null, DirectionalLightHelper, 1);
   useHelper(showLightHelpers && pointLightRef.current ? pointLightRef : null, PointLightHelper, 1);
 
   return (
     <>
-      {/* Enhanced Environment and Lighting */}
+      {/* Optimized Environment and Lighting for mobile */}
       <Environment preset="studio" />
-      <ambientLight intensity={0.4} />
+      <ambientLight intensity={0.5} />
       <directionalLight 
         ref={directionalLightRef}
         position={[10, 10, 5]} 
-        intensity={0.8} 
+        intensity={0.6} 
         castShadow 
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-far={50}
-        shadow-camera-left={-10}
-        shadow-camera-right={10}
-        shadow-camera-top={10}
-        shadow-camera-bottom={-10}
+        shadow-mapSize-width={512} // Reduced from 2048 for mobile performance
+        shadow-mapSize-height={512} // Reduced from 2048 for mobile performance
+        shadow-camera-far={30} // Reduced shadow distance
+        shadow-camera-left={-5}
+        shadow-camera-right={5}
+        shadow-camera-top={5}
+        shadow-camera-bottom={-5}
       />
       <pointLight 
         ref={pointLightRef}
         position={[-5, 5, -5]} 
-        intensity={0.4} 
+        intensity={0.3} 
         color="#4dafff"
-        castShadow
+        castShadow={false} // Disable shadows on point light for performance
       />
       
-      {/* Enhanced Grid with toggle */}
+      {/* Simplified Grid for mobile */}
       {showGrid && (
         <Grid 
-          args={[20, 20]} 
+          args={[10, 10]} // Reduced grid size
           cellSize={1} 
-          cellThickness={0.5} 
+          cellThickness={0.3} // Thinner lines
           cellColor="#4a5568" 
           sectionSize={5} 
-          sectionThickness={1} 
+          sectionThickness={0.6} // Thinner section lines
           sectionColor="#718096"
-          fadeDistance={25}
+          fadeDistance={15} // Reduced fade distance
           fadeStrength={1}
           followCamera={false}
-          infiniteGrid={true}
+          infiniteGrid={false} // Disable infinite grid for performance
         />
       )}
       
-      {/* Ground plane for shadows */}
+      {/* Simplified ground plane */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
-        <planeGeometry args={[50, 50]} />
-        <meshStandardMaterial color="#2d3748" transparent opacity={0.1} />
+        <planeGeometry args={[20, 20]} /> {/* Reduced size */}
+        <meshStandardMaterial color="#2d3748" transparent opacity={0.05} />
       </mesh>
       
       {/* Scene Objects */}
@@ -269,8 +269,8 @@ const EditorScene = memo<{
         />
       ))}
       
-      {/* Enhanced Gizmo Helper */}
-      <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
+      {/* Simplified Gizmo Helper */}
+      <GizmoHelper alignment="bottom-right" margin={[60, 60]}>
         <GizmoViewport 
           axisColors={['#ff4757', '#2ed573', '#3742fa']} 
           labelColor="white"
@@ -880,17 +880,17 @@ const ThreeDEditor: React.FC<ThreeDEditorProps> = ({ isModalView = false }) => {
 
   return (
     <section id="editor" className={`relative h-screen overflow-hidden bg-black ${isModalView ? 'rounded-xl' : ''}`}>
-      {/* 3D Canvas */}
+      {/* 3D Canvas - Optimized for mobile performance */}
       <Canvas
         camera={{ position: [5, 5, 5], fov: 60 }}
         gl={{ 
-          antialias: true,
+          antialias: window.innerWidth > 768, // Disable antialiasing on mobile
           alpha: false,
           powerPreference: "high-performance",
           stencil: false,
           depth: true,
         }}
-        dpr={[1, 2]}
+        dpr={window.innerWidth > 768 ? [1, 2] : [1, 1.5]} // Lower DPR on mobile
         shadows
         frameloop={isPlaying ? "always" : "demand"}
         onClick={() => setSelectedObjectId(null)}
@@ -906,7 +906,7 @@ const ThreeDEditor: React.FC<ThreeDEditorProps> = ({ isModalView = false }) => {
             onTransformObject={transformObject}
           />
           
-          {/* Enhanced Camera Controls */}
+          {/* Enhanced Camera Controls - optimized for mobile */}
           <OrbitControls
             ref={orbitControlsRef}
             makeDefault
@@ -914,10 +914,10 @@ const ThreeDEditor: React.FC<ThreeDEditorProps> = ({ isModalView = false }) => {
             enableZoom={true}
             enableRotate={true}
             target={[0, 0, 0]}
-            maxDistance={50}
-            minDistance={0.5}
+            maxDistance={30} // Reduced for mobile
+            minDistance={1}
             enableDamping={true}
-            dampingFactor={0.05}
+            dampingFactor={0.08} // Slightly higher for mobile responsiveness
             maxPolarAngle={Math.PI}
             minPolarAngle={0}
           />
@@ -933,36 +933,36 @@ const ThreeDEditor: React.FC<ThreeDEditorProps> = ({ isModalView = false }) => {
           transition={{ duration: 0.8 }}
           className="absolute top-6 left-1/2 transform -translate-x-1/2 text-center pointer-events-auto"
         >
-          <h1 className="text-3xl lg:text-4xl font-orbitron font-black text-gradient mb-2 leading-tight tracking-tighter">
+          <h1 className="text-2xl lg:text-4xl font-orbitron font-black text-gradient mb-2 leading-tight tracking-tighter">
             ENTERPRISE 3D EDITOR
           </h1>
-          <p className="text-sm text-slate-300 tracking-wide">
+          <p className="text-xs lg:text-sm text-slate-300 tracking-wide">
             Professional-grade 3D scene creation and manipulation platform
           </p>
         </motion.div>
 
-        {/* Main Toolbar */}
+        {/* Main Toolbar - Responsive */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="absolute top-20 left-1/2 transform -translate-x-1/2 pointer-events-auto"
+          className="absolute top-16 lg:top-20 left-1/2 transform -translate-x-1/2 pointer-events-auto"
         >
-          <div className="flex items-center space-x-4 glass-strong rounded-xl p-4">
+          <div className="flex items-center space-x-2 lg:space-x-4 glass-strong rounded-xl p-2 lg:p-4">
             {/* File Operations */}
-            <div className="flex items-center space-x-2 border-r border-white/10 pr-4">
+            <div className="flex items-center space-x-1 lg:space-x-2 border-r border-white/10 pr-2 lg:pr-4">
               <button
                 onClick={saveScene}
-                className="flex items-center space-x-2 px-4 py-2 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300"
+                className="flex items-center space-x-1 lg:space-x-2 px-2 lg:px-4 py-1 lg:py-2 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300"
                 title="Save Scene (Ctrl+S)"
               >
-                <Save className="w-4 h-4 text-white" />
-                <span className="text-sm text-white">Save</span>
+                <Save className="w-3 lg:w-4 h-3 lg:h-4 text-white" />
+                <span className="text-xs lg:text-sm text-white hidden sm:inline">Save</span>
               </button>
               
-              <label className="flex items-center space-x-2 px-4 py-2 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300 cursor-pointer">
-                <Upload className="w-4 h-4 text-white" />
-                <span className="text-sm text-white">Load</span>
+              <label className="flex items-center space-x-1 lg:space-x-2 px-2 lg:px-4 py-1 lg:py-2 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300 cursor-pointer">
+                <Upload className="w-3 lg:w-4 h-3 lg:h-4 text-white" />
+                <span className="text-xs lg:text-sm text-white hidden sm:inline">Load</span>
                 <input
                   type="file"
                   accept=".json"
@@ -973,149 +973,149 @@ const ThreeDEditor: React.FC<ThreeDEditorProps> = ({ isModalView = false }) => {
             </div>
 
             {/* History Operations */}
-            <div className="flex items-center space-x-2 border-r border-white/10 pr-4">
+            <div className="flex items-center space-x-1 lg:space-x-2 border-r border-white/10 pr-2 lg:pr-4">
               <button
                 onClick={undo}
                 disabled={historyIndex <= 0}
-                className="p-2 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-1 lg:p-2 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Undo (Ctrl+Z)"
               >
-                <Undo className="w-4 h-4 text-white" />
+                <Undo className="w-3 lg:w-4 h-3 lg:h-4 text-white" />
               </button>
               
               <button
                 onClick={redo}
                 disabled={historyIndex >= history.length - 1}
-                className="p-2 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-1 lg:p-2 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Redo (Ctrl+Y)"
               >
-                <Redo className="w-4 h-4 text-white" />
+                <Redo className="w-3 lg:w-4 h-3 lg:h-4 text-white" />
               </button>
             </div>
 
             {/* Transform Modes */}
-            <div className="flex items-center space-x-2 border-r border-white/10 pr-4">
+            <div className="flex items-center space-x-1 lg:space-x-2 border-r border-white/10 pr-2 lg:pr-4">
               <button
                 onClick={() => setTransformMode('translate')}
-                className={`p-2 glass rounded-lg transition-all duration-300 ${
+                className={`p-1 lg:p-2 glass rounded-lg transition-all duration-300 ${
                   transformMode === 'translate' ? 'neon-glow-accent' : 'neon-glow hover:neon-glow-accent'
                 }`}
                 title="Translate Mode (G)"
               >
-                <Move className={`w-4 h-4 ${transformMode === 'translate' ? 'text-accent-400' : 'text-white'}`} />
+                <Move className={`w-3 lg:w-4 h-3 lg:h-4 ${transformMode === 'translate' ? 'text-accent-400' : 'text-white'}`} />
               </button>
               
               <button
                 onClick={() => setTransformMode('rotate')}
-                className={`p-2 glass rounded-lg transition-all duration-300 ${
+                className={`p-1 lg:p-2 glass rounded-lg transition-all duration-300 ${
                   transformMode === 'rotate' ? 'neon-glow-accent' : 'neon-glow hover:neon-glow-accent'
                 }`}
                 title="Rotate Mode (R)"
               >
-                <RotateCw className={`w-4 h-4 ${transformMode === 'rotate' ? 'text-accent-400' : 'text-white'}`} />
+                <RotateCw className={`w-3 lg:w-4 h-3 lg:h-4 ${transformMode === 'rotate' ? 'text-accent-400' : 'text-white'}`} />
               </button>
               
               <button
                 onClick={() => setTransformMode('scale')}
-                className={`p-2 glass rounded-lg transition-all duration-300 ${
+                className={`p-1 lg:p-2 glass rounded-lg transition-all duration-300 ${
                   transformMode === 'scale' ? 'neon-glow-accent' : 'neon-glow hover:neon-glow-accent'
                 }`}
                 title="Scale Mode (S)"
               >
-                <Maximize className={`w-4 h-4 ${transformMode === 'scale' ? 'text-accent-400' : 'text-white'}`} />
+                <Maximize className={`w-3 lg:w-4 h-3 lg:h-4 ${transformMode === 'scale' ? 'text-accent-400' : 'text-white'}`} />
               </button>
             </div>
 
             {/* View Options */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 lg:space-x-2">
               <button
                 onClick={() => setShowGrid(!showGrid)}
-                className={`p-2 glass rounded-lg transition-all duration-300 ${
+                className={`p-1 lg:p-2 glass rounded-lg transition-all duration-300 ${
                   showGrid ? 'neon-glow-accent' : 'neon-glow hover:neon-glow-accent'
                 }`}
                 title="Toggle Grid"
               >
-                <Grid3X3 className={`w-4 h-4 ${showGrid ? 'text-accent-400' : 'text-white'}`} />
+                <Grid3X3 className={`w-3 lg:w-4 h-3 lg:h-4 ${showGrid ? 'text-accent-400' : 'text-white'}`} />
               </button>
               
               <button
                 onClick={() => setShowLightHelpers(!showLightHelpers)}
-                className={`p-2 glass rounded-lg transition-all duration-300 ${
+                className={`p-1 lg:p-2 glass rounded-lg transition-all duration-300 ${
                   showLightHelpers ? 'neon-glow-accent' : 'neon-glow hover:neon-glow-accent'
                 }`}
                 title="Toggle Light Helpers"
               >
-                <Lightbulb className={`w-4 h-4 ${showLightHelpers ? 'text-accent-400' : 'text-white'}`} />
+                <Lightbulb className={`w-3 lg:w-4 h-3 lg:h-4 ${showLightHelpers ? 'text-accent-400' : 'text-white'}`} />
               </button>
               
               <button
                 onClick={() => setIsPlaying(!isPlaying)}
-                className={`p-2 glass rounded-lg transition-all duration-300 ${
+                className={`p-1 lg:p-2 glass rounded-lg transition-all duration-300 ${
                   isPlaying ? 'neon-glow-accent' : 'neon-glow hover:neon-glow-accent'
                 }`}
                 title="Toggle Animation"
               >
                 {isPlaying ? (
-                  <Pause className="w-4 h-4 text-accent-400" />
+                  <Pause className="w-3 lg:w-4 h-3 lg:h-4 text-accent-400" />
                 ) : (
-                  <Play className="w-4 h-4 text-white" />
+                  <Play className="w-3 lg:w-4 h-3 lg:h-4 text-white" />
                 )}
               </button>
             </div>
           </div>
         </motion.div>
 
-        {/* Add Objects Toolbar */}
+        {/* Add Objects Toolbar - Mobile optimized */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="absolute top-40 left-6 pointer-events-auto"
+          className="absolute top-32 lg:top-40 left-2 lg:left-6 pointer-events-auto"
         >
-          <div className="glass-strong rounded-xl p-4 space-y-3">
-            <h3 className="text-sm font-orbitron font-bold text-white tracking-tight flex items-center">
-              <Plus className="w-4 h-4 mr-2 text-primary-400" />
-              Add Objects
+          <div className="glass-strong rounded-xl p-2 lg:p-4 space-y-2 lg:space-y-3">
+            <h3 className="text-xs lg:text-sm font-orbitron font-bold text-white tracking-tight flex items-center">
+              <Plus className="w-3 lg:w-4 h-3 lg:h-4 mr-1 lg:mr-2 text-primary-400" />
+              <span className="hidden sm:inline">Add Objects</span>
             </h3>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1 lg:gap-2">
               <button
                 onClick={() => addObject('box')}
-                className="flex items-center justify-center p-3 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300"
+                className="flex items-center justify-center p-2 lg:p-3 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300"
                 title="Add Box"
               >
-                <Box className="w-4 h-4 text-white" />
+                <Box className="w-3 lg:w-4 h-3 lg:h-4 text-white" />
               </button>
               <button
                 onClick={() => addObject('sphere')}
-                className="flex items-center justify-center p-3 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300"
+                className="flex items-center justify-center p-2 lg:p-3 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300"
                 title="Add Sphere"
               >
-                <Sphere className="w-4 h-4 text-white" />
+                <Sphere className="w-3 lg:w-4 h-3 lg:h-4 text-white" />
               </button>
               <button
                 onClick={() => addObject('cylinder')}
-                className="flex items-center justify-center p-3 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300"
+                className="flex items-center justify-center p-2 lg:p-3 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300"
                 title="Add Cylinder"
               >
-                <Cylinder className="w-4 h-4 text-white" />
+                <Cylinder className="w-3 lg:w-4 h-3 lg:h-4 text-white" />
               </button>
               <button
                 onClick={() => addObject('cone')}
-                className="flex items-center justify-center p-3 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300"
+                className="flex items-center justify-center p-2 lg:p-3 glass rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300"
                 title="Add Cone"
               >
-                <Triangle className="w-4 h-4 text-white" />
+                <Triangle className="w-3 lg:w-4 h-3 lg:h-4 text-white" />
               </button>
             </div>
           </div>
         </motion.div>
 
-        {/* Camera Presets */}
+        {/* Camera Presets - Hidden on mobile */}
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="absolute top-40 right-6 pointer-events-auto"
+          className="absolute top-40 right-6 pointer-events-auto hidden lg:block"
         >
           <div className="glass-strong rounded-xl p-4 space-y-3">
             <h3 className="text-sm font-orbitron font-bold text-white tracking-tight flex items-center">
@@ -1136,55 +1136,61 @@ const ThreeDEditor: React.FC<ThreeDEditorProps> = ({ isModalView = false }) => {
           </div>
         </motion.div>
 
-        {/* Status Bar */}
+        {/* Status Bar - Mobile optimized */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
-          className="absolute bottom-6 left-6 right-6 flex justify-between items-center pointer-events-auto"
+          className="absolute bottom-2 lg:bottom-6 left-2 lg:left-6 right-2 lg:right-6 flex flex-col lg:flex-row justify-between items-center space-y-2 lg:space-y-0 pointer-events-auto"
         >
-          <div className="glass-strong px-4 py-2 rounded-full">
-            <span className="text-sm text-slate-300 tracking-wide">
-              Objects: {objects.length} | Selected: {selectedObject?.name || 'None'} | Mode: {transformMode}
+          <div className="glass-strong px-2 lg:px-4 py-1 lg:py-2 rounded-full">
+            <span className="text-xs lg:text-sm text-slate-300 tracking-wide">
+              Objects: {objects.length} | Selected: {selectedObject?.name || 'None'}
             </span>
           </div>
           
-          <div className="glass-strong px-4 py-2 rounded-full">
-            <span className="text-sm text-slate-300 tracking-wide">
-              History: {historyIndex + 1}/{history.length} | {isPlaying ? 'Playing' : 'Paused'}
+          <div className="glass-strong px-2 lg:px-4 py-1 lg:py-2 rounded-full">
+            <span className="text-xs lg:text-sm text-slate-300 tracking-wide">
+              Mode: {transformMode} | {isPlaying ? 'Playing' : 'Paused'}
             </span>
           </div>
         </motion.div>
       </div>
 
-      {/* Scene Hierarchy Panel */}
+      {/* Scene Hierarchy Panel - Hidden on mobile by default */}
       <AnimatePresence>
         {showHierarchy && (
-          <HierarchyPanel
-            objects={objects}
-            selectedObjectId={selectedObjectId}
-            onSelectObject={setSelectedObjectId}
-            onUpdateObject={updateObject}
-            onDeleteObject={deleteObject}
-          />
+          <div className="hidden lg:block">
+            <HierarchyPanel
+              objects={objects}
+              selectedObjectId={selectedObjectId}
+              onSelectObject={setSelectedObjectId}
+              onUpdateObject={updateObject}
+              onDeleteObject={deleteObject}
+            />
+          </div>
         )}
       </AnimatePresence>
 
-      {/* Properties Panel */}
+      {/* Properties Panel - Hidden on mobile by default */}
       <AnimatePresence>
-        <PropertiesPanel
-          selectedObject={selectedObject}
-          onUpdateObject={updateObject}
-        />
+        {selectedObject && (
+          <div className="hidden lg:block">
+            <PropertiesPanel
+              selectedObject={selectedObject}
+              onUpdateObject={updateObject}
+            />
+          </div>
+        )}
       </AnimatePresence>
 
       {/* Toggle Hierarchy Button */}
       <button
         onClick={() => setShowHierarchy(!showHierarchy)}
-        className="absolute top-32 left-6 p-3 glass-strong rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300 z-20"
+        className="absolute top-24 lg:top-32 left-2 lg:left-6 p-2 lg:p-3 glass-strong rounded-lg neon-glow hover:neon-glow-accent transition-all duration-300 z-20 lg:hidden"
         title="Toggle Hierarchy Panel"
       >
-        <Layers className={`w-5 h-5 ${showHierarchy ? 'text-accent-400' : 'text-white'}`} />
+        <Layers className={`w-4 lg:w-5 h-4 lg:h-5 ${showHierarchy ? 'text-accent-400' : 'text-white'}`} />
       </button>
     </section>
   );
