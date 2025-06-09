@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { motion } from 'framer-motion';
-import { Layers, Box, Sphere, Cylinder, Triangle, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { Layers, Box, Cherry as Sphere, Cylinder, Triangle, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { SceneObject } from './types';
 
 interface HierarchyPanelProps {
