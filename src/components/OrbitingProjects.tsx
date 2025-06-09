@@ -33,11 +33,14 @@ const OrbitingProjects: React.FC<OrbitingProjectsProps> = ({
     return () => window.removeEventListener('resize', updateRadius);
   }, []);
 
-  // Calculate positions for each project in orbit
+  // Calculate positions for each project in orbit with corrected coordinate system
   const getProjectPosition = (index: number, total: number) => {
     const angle = (index / total) * 2 * Math.PI;
-    const x = Math.cos(angle) * radius;
-    const y = Math.sin(angle) * radius;
+    // Add offset to push cards to the edge of the visual orbit
+    const cardOrbitRadius = radius + 30;
+    const x = Math.cos(angle) * cardOrbitRadius;
+    // Invert y coordinate to match visual representation
+    const y = -Math.sin(angle) * cardOrbitRadius;
     return { x, y, angle };
   };
 
