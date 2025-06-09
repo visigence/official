@@ -1,0 +1,9 @@
+/* This is a placeholder for the Orbitron Bold font file.
+   In a real implementation, you would:
+   1. Download the Orbitron Bold font from Google Fonts
+   2. Convert it to WOFF format for web optimization
+   3. Place the actual font file here
+   
+   For now, the Text component will fallback to system fonts
+   if this file is not found, preventing loading errors.
+*/
