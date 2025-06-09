@@ -12,7 +12,7 @@ interface AboutProps {
 
 const About: React.FC<AboutProps> = ({ setActiveSection, onProjectClick }) => {
   return (
-    <section id="about" className="py-24 lg:py-40 relative overflow-hidden min-h-screen">
+    <section id="about\" className="py-24 lg:py-40 relative overflow-hidden min-h-screen">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-radial opacity-20" />
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl" />
