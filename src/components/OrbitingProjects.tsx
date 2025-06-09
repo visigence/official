@@ -33,15 +33,13 @@ const OrbitingProjects: React.FC<OrbitingProjectsProps> = ({
     return () => window.removeEventListener('resize', updateRadius);
   }, []);
 
-  // Calculate positions for each project in orbit - positioned on the edge of the visual ring
+  // Calculate positions for each project in orbit - cards centered on the orbit ring
   const getProjectPosition = (index: number, total: number) => {
     const angle = (index / total) * 2 * Math.PI;
-    // Adjust radius to position cards on the edge of the visual orbit ring
-    // Subtract card width/2 (80px for w-40) to align outer edge with ring
-    const cardOrbitRadius = radius - 80;
-    const x = Math.cos(angle) * cardOrbitRadius;
-    // Invert y coordinate to match visual representation
-    const y = -Math.sin(angle) * cardOrbitRadius;
+    // Position card centers directly on the orbit ring for perfect alignment
+    const x = Math.cos(angle) * radius;
+    // Use positive sin for clockwise distribution matching container rotation
+    const y = Math.sin(angle) * radius;
     return { x, y, angle };
   };
 
@@ -80,21 +78,21 @@ const OrbitingProjects: React.FC<OrbitingProjectsProps> = ({
               animate={{ y: [0, -5, 0], x: [0, 5, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
             >
-              <Brain className="w-5 h-5 text-primary-400 opacity-80" /> {/* Slightly smaller, less opaque */}
+              <Brain className="w-5 h-5 text-primary-400 opacity-80" />
             </motion.div>
             <motion.div
               className="absolute bottom-4 left-4"
               animate={{ y: [0, 5, 0], x: [0, -5, 0] }}
               transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
             >
-              <Code className="w-5 h-5 text-accent-400 opacity-80" /> {/* Slightly smaller, less opaque */}
+              <Code className="w-5 h-5 text-accent-400 opacity-80" />
             </motion.div>
             <motion.div
-              className="absolute top-1/2 -right-2 transform -translate-y-1/2" // Centered vertically
+              className="absolute top-1/2 -right-2 transform -translate-y-1/2"
               animate={{ y: [0, -5, 0], x: [0, 5, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
             >
-              <Palette className="w-5 h-5 text-purple-400 opacity-80" /> {/* Slightly smaller, less opaque */}
+              <Palette className="w-5 h-5 text-purple-400 opacity-80" />
             </motion.div>
           </motion.div>
         </div>
@@ -126,7 +124,7 @@ const OrbitingProjects: React.FC<OrbitingProjectsProps> = ({
           ease: "linear"
         }}
       >
-        {/* Enhanced Orbit Ring Visual */}
+        {/* Enhanced Orbit Ring Visual - matches card positioning exactly */}
         <div
           className="absolute border-2 border-primary-400/30 rounded-full"
           style={{
