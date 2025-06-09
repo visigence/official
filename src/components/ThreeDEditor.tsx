@@ -600,11 +600,7 @@ const LoadingScreen = memo(() => (
 ));
 
 // Main Enhanced 3D Editor Component
-interface ThreeDEditorProps {
-  isModalView?: boolean;
-}
-
-const ThreeDEditor: React.FC<ThreeDEditorProps> = ({ isModalView = false }) => {
+const ThreeDEditor: React.FC = () => {
   // Core state
   const [objects, setObjects] = useState<SceneObject[]>([]);
   const [selectedObjectId, setSelectedObjectId] = useState<string | null>(null);
@@ -667,9 +663,6 @@ const ThreeDEditor: React.FC<ThreeDEditorProps> = ({ isModalView = false }) => {
 
   // Keyboard shortcuts
   useEffect(() => {
-    // Disable keyboard shortcuts in modal view to prevent conflicts
-    if (isModalView) return;
-
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
         switch (e.key) {
@@ -722,7 +715,7 @@ const ThreeDEditor: React.FC<ThreeDEditorProps> = ({ isModalView = false }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedObjectId, undo, redo, isModalView]);
+  }, [selectedObjectId, undo, redo]);
 
   // Generate unique ID for new objects
   const generateId = () => `object_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -879,7 +872,7 @@ const ThreeDEditor: React.FC<ThreeDEditorProps> = ({ isModalView = false }) => {
   }, []);
 
   return (
-    <section id="editor" className={`relative h-screen overflow-hidden bg-black ${isModalView ? 'rounded-xl' : ''}`}>
+    <section id="editor" className="relative h-screen overflow-hidden bg-black">
       {/* 3D Canvas - Optimized for mobile performance */}
       <Canvas
         camera={{ position: [5, 5, 5], fov: 60 }}

@@ -9,7 +9,7 @@ import Footer from './components/Footer';
 import ProjectDetailView from './components/ProjectDetailView';
 import { Project } from './data/projects';
 
-export type AppSection = 'home' | 'about' | 'editor' | 'contact';
+export type AppSection = 'home' | 'about' | 'editor' | 'contact' | 'projectDetail';
 
 function App() {
   const [activeSection, setActiveSection] = useState<AppSection>('home');
@@ -40,33 +40,40 @@ function App() {
     }
   }, []);
 
+  // Navigate to section with smooth scrolling
+  const navigateToSection = (section: AppSection) => {
+    if (section === 'projectDetail') {
+      setActiveSection(section);
+      return;
+    }
+    
+    setActiveSection(section);
+    
+    // Smooth scroll to section
+    setTimeout(() => {
+      const element = document.getElementById(section);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
   const handleProjectClick = (project: Project) => {
     setSelectedProject(project);
-    setActiveSection('editor');
+    setActiveSection('projectDetail');
   };
 
   const handleCloseProjectDetail = () => {
     setSelectedProject(null);
     setActiveSection('about');
-  };
-
-  const renderActiveSection = () => {
-    switch (activeSection) {
-      case 'home':
-        return <Hero setActiveSection={setActiveSection} />;
-      case 'about':
-        return <About setActiveSection={setActiveSection} onProjectClick={handleProjectClick} />;
-      case 'editor':
-        return selectedProject?.liveComponent ? (
-          <selectedProject.liveComponent />
-        ) : (
-          <ThreeDEditor />
-        );
-      case 'contact':
-        return <Contact />;
-      default:
-        return <Hero setActiveSection={setActiveSection} />;
-    }
+    
+    // Scroll back to about section
+    setTimeout(() => {
+      const aboutElement = document.getElementById('about');
+      if (aboutElement) {
+        aboutElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   return (
@@ -87,46 +94,27 @@ function App() {
       </motion.div>
 
       {/* Header */}
-      <Header activeSection={activeSection} setActiveSection={setActiveSection} />
+      <Header activeSection={activeSection} setActiveSection={navigateToSection} />
 
-      {/* Main Content with Section Transitions */}
-      <main className={`relative ${activeSection === 'editor' && selectedProject ? 'fixed inset-0 z-40' : ''}`}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeSection}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
-          >
-            {renderActiveSection()}
-          </motion.div>
-        </AnimatePresence>
-      </main>
-
-      {/* Project Detail Modal */}
-      <AnimatePresence>
-        {selectedProject && activeSection === 'editor' && (
+      {/* Main Content */}
+      <main className="relative">
+        {activeSection === 'projectDetail' && selectedProject ? (
+          /* Full-Screen Project Detail View */
           <ProjectDetailView
             project={selectedProject}
             onClose={handleCloseProjectDetail}
           />
+        ) : (
+          /* Main Page Sections */
+          <>
+            <Hero setActiveSection={navigateToSection} />
+            <About setActiveSection={navigateToSection} onProjectClick={handleProjectClick} />
+            <ThreeDEditor />
+            <Contact />
+            <Footer setActiveSection={navigateToSection} />
+          </>
         )}
-      </AnimatePresence>
-
-      {/* Footer - only show on home and contact sections */}
-      <AnimatePresence>
-        {(activeSection === 'home' || activeSection === 'contact') && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <Footer setActiveSection={setActiveSection} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </main>
 
       {/* Background Effects */}
       <div className="fixed inset-0 pointer-events-none z-0">
