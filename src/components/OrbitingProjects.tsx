@@ -9,8 +9,8 @@ interface OrbitingProjectsProps {
   onProjectClick: (project: Project) => void;
 }
 
-const OrbitingProjects: React.FC<OrbitingProjectsProps> = ({ 
-  projects, 
+const OrbitingProjects: React.FC<OrbitingProjectsProps> = ({
+  projects,
   onProjectClick
 }) => {
   const [radius, setRadius] = useState(450);
@@ -53,22 +53,45 @@ const OrbitingProjects: React.FC<OrbitingProjectsProps> = ({
       >
         <div className="w-64 h-64 mx-auto relative">
           <div className="absolute inset-0 rounded-full bg-gradient-main opacity-30" />
-          <div className="absolute inset-2 rounded-full glass-strong backdrop-blur-lg overflow-hidden neon-glow">
+          <div className="absolute inset-2 rounded-full glass-strong backdrop-blur-lg overflow-hidden"
+            // Refined neon-glow for the profile image
+            style={{
+              boxShadow: '0 0 20px rgba(120, 85, 255, 0.4), 0 0 40px rgba(120, 85, 255, 0.15)'
+            }}
+          >
             <img
               src="/AD426902-0D29-4D16-8F67-A99D342AC311.jpeg"
               alt="Omry Damari - Founder of Visigence"
               className="w-full h-full object-cover"
             />
           </div>
-          {/* Floating Icons */}
+          {/* Floating Icons with subtle individual animations */}
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
             className="absolute inset-0"
           >
-            <Brain className="absolute top-4 right-4 w-6 h-6 text-primary-400" />
-            <Code className="absolute bottom-4 left-4 w-6 h-6 text-accent-400" />
-            <Palette className="absolute top-1/2 -right-2 w-6 h-6 text-purple-400" />
+            <motion.div
+              className="absolute top-4 right-4"
+              animate={{ y: [0, -5, 0], x: [0, 5, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            >
+              <Brain className="w-5 h-5 text-primary-400 opacity-80" /> {/* Slightly smaller, less opaque */}
+            </motion.div>
+            <motion.div
+              className="absolute bottom-4 left-4"
+              animate={{ y: [0, 5, 0], x: [0, -5, 0] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            >
+              <Code className="w-5 h-5 text-accent-400 opacity-80" /> {/* Slightly smaller, less opaque */}
+            </motion.div>
+            <motion.div
+              className="absolute top-1/2 -right-2 transform -translate-y-1/2" // Centered vertically
+              animate={{ y: [0, -5, 0], x: [0, 5, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+            >
+              <Palette className="w-5 h-5 text-purple-400 opacity-80" /> {/* Slightly smaller, less opaque */}
+            </motion.div>
           </motion.div>
         </div>
       </motion.div>
@@ -100,19 +123,20 @@ const OrbitingProjects: React.FC<OrbitingProjectsProps> = ({
         }}
       >
         {/* Enhanced Orbit Ring Visual */}
-        <div 
+        <div
           className="absolute border-2 border-primary-400/30 rounded-full"
           style={{
             width: radius * 2,
             height: radius * 2,
-            boxShadow: '0 0 30px rgba(120, 85, 255, 0.15), inset 0 0 15px rgba(120, 85, 255, 0.05)'
+            // Refined box-shadow for the orbit ring
+            boxShadow: '0 0 40px rgba(120, 85, 255, 0.2), inset 0 0 20px rgba(120, 85, 255, 0.08)'
           }}
         />
-        
+
         {/* Project Cards */}
         {projects.map((project, index) => {
           const position = getProjectPosition(index, projects.length);
-          
+
           return (
             <motion.div
               key={project.id}
@@ -147,23 +171,23 @@ const OrbitingProjects: React.FC<OrbitingProjectsProps> = ({
       <div className="absolute inset-0 pointer-events-none">
         {/* Enhanced Central Glow */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-primary-500/15 rounded-full blur-3xl opacity-15" />
-        
+
         {/* Enhanced Orbit Glow */}
-        <div 
+        <div
           className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-2 border-primary-400/15 rounded-full opacity-15"
           style={{
             width: radius * 2.5,
             height: radius * 2.5,
           }}
         />
-        
-        {/* Enhanced Floating Particles with variety */}
+
+        {/* Enhanced Floating Particles with variety and more subtle animation */}
         {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
             className={`absolute rounded-full ${
-              i % 3 === 0 ? 'w-1 h-1 bg-white/50' : 
-              i % 3 === 1 ? 'w-2 h-2 bg-primary-400/50' : 
+              i % 3 === 0 ? 'w-1 h-1 bg-white/50' :
+              i % 3 === 1 ? 'w-2 h-2 bg-primary-400/50' :
               'w-3 h-3 bg-accent-400/40'
             }`}
             style={{
@@ -171,10 +195,10 @@ const OrbitingProjects: React.FC<OrbitingProjectsProps> = ({
               top: `${10 + (i * 5)}%`,
             }}
             animate={{
-              y: [-30, 30, -30],
-              x: [-15, 15, -15],
-              opacity: [0.2, 0.8, 0.2],
-              scale: [0.6, 1.4, 0.6],
+              y: [-10, 10, -10], // Reduced range
+              x: [-5, 5, -5],   // Reduced range
+              opacity: [0.2, 0.6, 0.2], // Reduced max opacity
+              scale: [0.8, 1.2, 0.8], // Reduced scale range
             }}
             transition={{
               duration: 6 + i * 0.3,
@@ -184,10 +208,10 @@ const OrbitingProjects: React.FC<OrbitingProjectsProps> = ({
             }}
           />
         ))}
-        
+
         {/* Additional atmospheric layers */}
         <div className="absolute inset-0 bg-gradient-radial from-primary-500/5 via-transparent to-accent-400/5 opacity-30" />
-        <div className="absolute inset-0 bg-gradient-conic from-primary-400/10 via-transparent to-accent-400/10 opacity-20 animate-spin" 
+        <div className="absolute inset-0 bg-gradient-conic from-primary-400/10 via-transparent to-accent-400/10 opacity-20 animate-spin"
              style={{ animationDuration: '120s' }} />
       </div>
     </div>
